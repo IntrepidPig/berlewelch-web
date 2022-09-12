@@ -129,6 +129,13 @@ fn input_output() -> Html {
     let on_encoded_change = dispatch.reduce_mut_callback_with(|state, evt: InputEvent| {
         let target = evt.target_dyn_into::<HtmlInputElement>().unwrap();
         let new = target.value();
+        if new.is_empty() {
+            state.hack = !state.hack;
+            state.original = String::new();
+            state.is_error = false;
+            state.encoded = new;
+            return;
+        }
         if !is_valid_message(&new) {
             state.hack = !state.hack;
             return;
@@ -137,7 +144,7 @@ fn input_output() -> Html {
             state.original = decoded;
             state.is_error = false;
         } else {
-            state.original = String::from("");
+            state.original = String::new();
             state.is_error = true;
         }
         state.encoded = new;
